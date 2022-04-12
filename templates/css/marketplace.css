@@ -23,8 +23,8 @@ ul{
 }
 
 nav {
-    
-    background-color: rgb(221, 169, 26);
+    height: auto;
+    background-color: rgb(24, 22, 18);
     
 }
 
@@ -57,19 +57,21 @@ margin-top: 15px;
 .topnav a {
     float: left;
     display: block;
-    color: black;
+    color: white;
     text-align: center;
     padding: 14px 16px;
     text-decoration: none;
     font-size: 17px;
-    background-color: rgb(221, 169, 26);
+    /* background-color: rgb(221, 169, 26); */
+    background-color: rgb(36, 32, 22);
+    border-radius: 5px;
    
 }
 
 
 .topnav a:hover {
-    background-color: rgb(14, 13, 13);
-    color: #fff;
+    background-color: rgb(221,169,26);
+    color: rgb(0, 0, 0);
 }
 
 .topnav a.active {
@@ -204,6 +206,7 @@ margin-top: 15px;
     display: grid;
     grid-gap: 20px;
     grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    background-color: rgb(51, 49, 49);
 }
 
 .box > img {
