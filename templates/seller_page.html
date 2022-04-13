@@ -34,12 +34,32 @@
         </form>
 
     </div>
-    <div class="seller-edit-product">
+<div class="edit-product">
+    {{range $ind, $val := .}}
+    <div>
+        <h1>{{ $ind }} . {{ .Image}}</h1>
+        <p>{{.product-Name}}</p>
+        <p>{{ .product-price}}</p>
+        <p>{{ .product-quanity-left}}</p>
+        <p>{{ .product-category}}</p>
+        <hr>
+
+            <ul class="icon-functions">
+                <li style="list-style-type: none;"><a  class="thebutton delete-product" href="/viewPost/?Personid={{ .ID }}"> View Post</a></li>
+                <li style="list-style-type: none;"><a class="thebutton delete-product" href="/deletePost/?Personid={{ .ID }}">Delete Post</a></li>
+                <li style="list-style-type: none;"><a class="thebutton delete-product" href="/editPost/?Personid={{ .ID }}">Edit Post</a></li>
+            </ul>
+    </div>
+    {{end}}
+
+</div>
+    
+    <!-- <div class="seller-edit-product">
 <h2>SELLER OPERATIONS</h2>
 <div><a href="" class="thebutton edit-product">Edit Product</a></div>
 <div><a href="" class="thebutton delete-product">Delete Product</a></div>
 <div><a href="" class="thebutton edit-product">View Product</a></div>
-    </div>
+    </div> -->
 </div>
 
 </body>
