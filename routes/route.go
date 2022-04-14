@@ -7,17 +7,39 @@ import (
 	"os"
 )
 
+//THE ROUTING IS USED TO HANDLE VARIOUS URL
 func CallRoutes(port string) {
 	//set route as default one made by Gin
 	router := gin.Default()
 
-	//sever all the HTML template quickly as soon as the pages load
+	//serve the static files
 	router.StaticFS("static", http.Dir("./templates/static"))
-	router.LoadHTMLGlob("templates/index.html")
 
-	//define a single homepage endpoint
+	//sever all the HTML template quickly as soon as the pages load
+	router.LoadHTMLGlob("templates/*.html")
+
+	//Welcome page router
 	router.GET("/", handlers.Welcomepage)
-	//
+	//Market place router
+	router.GET("/marketplace", handlers.MarketPlace)
+	//buyer page router
+	router.GET("/buyerspage", handlers.BuyerPage)
+	//Buyer SignUp router
+	router.GET("/buyerssignup", handlers.BuyerSignUp)
+	//seller signin router
+	router.GET("/sellersignup", handlers.SellerSignUp)
+	//Seller page router
+	router.GET("/sellerpage", handlers.SellerPage)
+
+	//Buyer Edit Product
+	router.GET("/editProduct", handlers.EditProduct)
+	//Buyer Update Product
+	router.POST("/updateProduct", handlers.UpdateProduct)
+
+	router.POST("/addProduct", handlers.AddProductToMarket)
+	//Search Products
+	//router.GET("/searchProduct", handlers.SearchProduct)
+
 	////define crud endpoints for sellers & buyers
 	//
 	////create
