@@ -5,11 +5,11 @@ import (
 	"net/http"
 )
 
-func Welcomepage(context *gin.Context) {
+func Welcomepage(c *gin.Context) {
 
 	//call the HTML Method of the context to render the template
 
-	context.HTML(
+	c.HTML(
 		//setup the status of the template
 		http.StatusOK,
 
