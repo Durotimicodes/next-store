@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"github.com/decadevs/next_store/database"
 	"github.com/decadevs/next_store/models"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
@@ -10,6 +9,7 @@ import (
 	"strconv"
 )
 
+//external database
 var db *gorm.DB
 
 //HANDLE WELCOME PAGE
@@ -23,7 +23,7 @@ func Welcomepage(c *gin.Context) {
 		//use which template or deploy which template
 		"index.html",
 		gin.H{
-			"title": "Home page"})
+			"title": "Next-Store"})
 
 }
 
@@ -78,13 +78,14 @@ func AddProductToMarket(c *gin.Context) {
 	var product models.Product
 
 	//parsing the form values
+
 	product.Image = c.PostForm("product-image")
 	product.Name = c.PostForm("product-Name")
 	product.Quantity, _ = strconv.Atoi(c.PostForm("product-quantity-left"))
 	product.Price, _ = strconv.Atoi(c.PostForm("product-price"))
 
 	//initialize the database
-	db := database.DB()
+	//db := database.DB()
 
 	err := db.Save(product).Error
 	if err != nil {

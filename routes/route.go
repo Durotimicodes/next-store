@@ -37,31 +37,6 @@ func CallRoutes(port string) {
 	router.POST("/updateProduct", handlers.UpdateProduct)
 
 	router.POST("/addProduct", handlers.AddProductToMarket)
-	//Search Products
-	//router.GET("/searchProduct", handlers.SearchProduct)
-
-	////define crud endpoints for sellers & buyers
-	//
-	////create
-	//router.POST("/buyers/signup", handlers.SignUpHandler)
-	//
-	//router.POST("/buyers/login", handlers.LoginHandler)
-	//
-	//router.POST("/sellers/addproducts", handlers.AdminAddProductHandler)
-	//
-	//// retrieve
-	//router.GET("/buyers/viewproducts", handlers.ViewProductsHandler)
-	//
-	//// update
-	//router.GET("/sellers/getproductsbyId", handlers.GetProductsByIdHandler)
-	//
-	//router.GET("/buyers/returnproducts", handlers.ReturnProductsHandler)
-	//
-	//router.POST("/sellers/udateproducts", handlers.UpdateProductsHandler)
-	//
-	//// delete
-	//
-	//router.GET("/sellers/deleteproduct", handlers.DeleteProducthandler)
 
 	//run the router
 	port = ":" + os.Getenv("PORT")
