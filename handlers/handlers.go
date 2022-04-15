@@ -85,7 +85,6 @@ func AddProductToMarket(c *gin.Context) {
 	product.Price, _ = strconv.Atoi(c.PostForm("product-price"))
 
 	//initialize the database
-	//db := database.DB()
 
 	err := db.Save(product).Error
 	if err != nil {
