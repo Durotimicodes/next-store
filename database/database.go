@@ -11,7 +11,7 @@ import (
 
 func DB() *gorm.DB {
 
-	const username = "root"
+	const username = ""
 	const password = ""
 	const dbname = ""
 
@@ -45,9 +45,9 @@ func AutoMigrate(db *gorm.DB) {
 func SellerDB() *gorm.DB {
 
 	//open database connection
-	const username = "root"
-	const password = "OluwaTimi30"
-	const dbname = "e-commerce_db"
+	const username = ""
+	const password = ""
+	const dbname = ""
 
 	//Database connection
 	db, err := gorm.Open("mysql", username+":"+password+"@tcp(127.0.0.1:3306)/"+dbname+"?charset=utf8mb4&parseTime=True&loc=Local")
