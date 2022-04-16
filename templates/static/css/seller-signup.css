@@ -5,7 +5,8 @@
 }
 
 body{
-    background-image: url("/templates/static/images/istockphoto-1140124099-170667a.jpeg");
+    /*background-image: url("/templates/static/images/istockphoto-1140124099-170667a.jpeg");*/
+                   background-image: url("/static/images/Create-eCommerce-Websites.webp");
     background-attachment: fixed;
     background-repeat: no-repeat;
     background-size: cover;

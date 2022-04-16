@@ -12,13 +12,12 @@ import (
 func DB() *gorm.DB {
 
 	const username = "root"
-	const password = "OluwaTimi30"
-	//const dbname = "Next-Store-DB"
-	const dbname = "NEW-NEXT-STORE-DB"
+	const password = ""
+	const dbname = ""
 
 	//Database connection
 	db, err := gorm.Open("mysql", username+":"+password+"@tcp(127.0.0.1:3306)/"+dbname+"?charset=utf8mb4&parseTime=True&loc=Local")
-	//error handle=ing
+	//error handling
 	if err != nil {
 		log.Println("checking database error", err)
 	}
@@ -48,26 +47,24 @@ func SellerDB() *gorm.DB {
 	//open database connection
 	const username = "root"
 	const password = "OluwaTimi30"
-	//const dbname = "Next-Store-DB"
-	const dbname = "NEW-NEXT-STORE-DB"
+	const dbname = "e-commerce_db"
 
 	//Database connection
 	db, err := gorm.Open("mysql", username+":"+password+"@tcp(127.0.0.1:3306)/"+dbname+"?charset=utf8mb4&parseTime=True&loc=Local")
-	//error handle=ing
+	//error handling
 	if err != nil {
 		log.Println("checking database error", err)
 	}
 	defer db.Close()
 
 	currentTime := time.Now()
+	Model := gorm.Model{ID: 1, CreatedAt: currentTime, UpdatedAt: currentTime, DeletedAt: nil}
+	var Product = []models.Product{{Model, "Golang Squard10 Polo", 6000, 10, "Nice Polo Outfit", "https://www.google.com/url?sa=i&url=https%3A%2F%2Fjiji.ng%2Fajah%2Fclothing%2Ft-shirt-and-cap-print-branding-oVVMEnC1mBFSzgFoMhPoYd5R.html&psig=AOvVaw19zEvHw76sOOwj0T8hLpRO&ust=1650138377657000&source=images&cd=vfe&ved=0CAwQjRxqFwoTCIi5ttnqlvcCFQAAAAAdAAAAABAD"}}
 
 	//CREATE
 	var Seller = models.Seller{
-		models.User{1, "Golang-SQ10-Ecommerce",
-			"sq10golang@gmail.com", "ProductOwner", "12345",
-			"12345", "Edo Tech Park"}, 1, 1,
-		[]models.Product{
-			{1, "Decagon Sport Wear", 3500, 10, "Decagon XXL Polo", "https://www.google.com/url?sa=i&url=https%3A%2F%2Fjiji.ng%2Fajah%2Fclothing%2Ft-shirt-and-cap-print-branding-oVVMEnC1mBFSzgFoMhPoYd5R.html&psig=AOvVaw19zEvHw76sOOwj0T8hLpRO&ust=1650138377657000&source=images&cd=vfe&ved=0CAwQjRxqFwoTCIi5ttnqlvcCFQAAAAAdAAAAABAD", currentTime, currentTime, currentTime}}}
+		models.User{1, "Golang-SQ10-Ecommerce", "sq10golang@gmail.com", "ProductOwner", "12345", "12345", "Edo Tech Park"}, 1, 1,
+		Product}
 
 	result := db.Create(&Seller)
 	err = result.Error

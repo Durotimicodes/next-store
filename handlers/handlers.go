@@ -78,7 +78,6 @@ func AddProductToMarket(c *gin.Context) {
 	var product models.Product
 
 	//parsing the form values
-
 	product.Image = c.PostForm("product-image")
 	product.Name = c.PostForm("product-Name")
 	product.Quantity, _ = strconv.Atoi(c.PostForm("product-quantity-left"))

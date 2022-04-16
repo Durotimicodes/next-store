@@ -38,7 +38,7 @@ func CallRoutes(port string) {
 
 	router.POST("/addProduct", handlers.AddProductToMarket)
 
-	//run the router
+	//start and run the server on port 8082
 	port = ":" + os.Getenv("PORT")
 	if port == ":" {
 		port = ":8082"
