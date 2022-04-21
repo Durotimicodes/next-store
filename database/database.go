@@ -7,6 +7,7 @@ import (
 	"github.com/jinzhu/gorm"
 	"log"
 	"os"
+	"time"
 )
 
 //DECLARE A VARIABLE THAT CONNECTS WITH DB
@@ -55,7 +56,6 @@ func AutoMigrate(db *gorm.DB) {
 func FindUserByEmail(email string) (*models.User, error) {
 	user := &models.User{}
 	var err = DBClient.Where("email = ?", email).First(user).Error
-	log.Println("second line")
 	if err != nil {
 		return nil, err
 	}
@@ -76,8 +76,8 @@ func FindUserIdByEmail(email string) (uint, error) {
 //FUNCTION TO FIND SELLER BY EMAIL
 func FindSellerByEmail(email string) (*models.Seller, error) {
 	seller := &models.Seller{}
+	// querying the db for seller by email
 	var err = DBClient.Where("email = ?", email).First(seller).Error
-	log.Println("second line")
 	if err != nil {
 		return nil, err
 	}
@@ -97,7 +97,7 @@ func SellerDB() *gorm.DB {
 	if err != nil {
 		log.Println("checking database error", err)
 	}
-	defer db.Close()
+	//defer db.Close()
 
 	//Seller details
 	UserOne := models.User{
@@ -110,7 +110,11 @@ func SellerDB() *gorm.DB {
 		AccountName:   os.Getenv("SELLER_ACCOUNTNAME"),
 		AccountNumber: os.Getenv("SELLER_ACCOUNT_NUMBER"),
 		Phonenumber:   os.Getenv("SELLER_PHONENUMBER"),
+		BankName:      os.Getenv("SELLER_BANKNAME"),
+		PasswordHash:  "",
+		TimeCreated:   time.Now().Format("20-02-2021, 23:12"),
 	}
+	UserOne.PasswordHash = UserOne.PasswordHasher()
 
 	//CREATE SELLER
 	var Seller = models.Seller{

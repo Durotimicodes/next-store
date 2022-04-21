@@ -251,7 +251,7 @@ func BuyerSignUp(c *gin.Context) {
 
 //BUYER SIGN-UP HANDLER
 func BuyerSignUpHandler(c *gin.Context) {
-	// grt the user from the form and populate the user struct
+	// get the user from the form and populate the user struct
 	user := &models.User{}
 	user.Name = c.PostForm("name")
 	user.Password = c.PostForm("password")
@@ -290,78 +290,69 @@ func SellerLoginHandler(c *gin.Context) {
 	seller := &models.Seller{}
 	seller.Password = c.PostForm("password")
 	seller.Email = c.PostForm("email")
-	fmt.Println("ORINTING", seller.TimeCreated)
+	fmt.Println("PRINTING", seller.TimeCreated)
 	userDB, err := database.FindSellerByEmail(seller.Email)
 	if err != nil {
 		log.Println(err)
 		c.HTML(http.StatusOK, "seller_login.html", gin.H{
-			"error": "invalid email or password",
+			"error": "invalid email",
 		})
 		return
-		// add a function to render a message to the seller
 	}
 	err = bcrypt.CompareHashAndPassword([]byte(userDB.PasswordHash), []byte(seller.Password))
 	if err != nil {
-		log.Println("error validating")
-		fmt.Printf("error validating password :%v", err)
+		log.Printf("error validating password :%v", err)
 		c.HTML(http.StatusOK, "seller_login.html", gin.H{
 			"error": "invalid password",
 		})
 		return
 	}
-	if seller.Email == "sq10golang@gmail.com" {
-		c.HTML(http.StatusOK, "seller_page.html", gin.H{
-			"message": "successful sign in",
-		})
-	}
+
+	//setting the cookie for the user
+
 	c.SetCookie("seasalt", seller.Email, 3600*24, "", "", true, true)
-	c.HTML(http.StatusOK, "buyer_page.html", gin.H{
-		"message": "successful sign in",
-	})
-	//  c.Redirect(http.StatusPermanentRedirect, "/sellerpage")
+	//c.HTML(http.StatusOK, "buyer_page.html", gin.H{
+	//	"message": "successful sign in",
+	//})
+	c.Redirect(http.StatusPermanentRedirect, "/sellers/addproducts")
 	return
 }
 
 func LoginHandler(c *gin.Context) {
-	// grt the user from the form and populate the user struct
+	// get the user from the form and populate the user struct
 	user := &models.User{}
 	user.Password = c.PostForm("password")
 	user.Email = c.PostForm("email")
-	fmt.Println("ORINTING", user.TimeCreated)
+
 	userDB, err := database.FindUserByEmail(user.Email)
 	if err != nil {
 		log.Println(err)
 		c.HTML(http.StatusOK, "buyer_signin.html", gin.H{
-			"error": "invalid email or password",
+			"error": "invalid email",
 		})
 		return
-		// add a function to render a message to the user
 	}
-	log.Println("first line")
+
 	err = bcrypt.CompareHashAndPassword([]byte(userDB.PasswordHash), []byte(user.Password))
-	log.Println("second line")
 	if err != nil {
-		log.Println("error validating")
-		fmt.Printf("error validating password :%v", err)
+		log.Printf("error validating password :%v", err)
 		c.HTML(http.StatusOK, "buyer_signin.html", gin.H{
 			"error": "invalid password",
 		})
 		return
 	}
-	if user.Email == "sq10golang@gmail.com" {
-		c.HTML(http.StatusOK, "buyer_signin.html", gin.H{
-			"message": "successful sign in",
-		})
-	}
+
+	// encoding the cookie string
 	cookiePart := rand.Int()
 	cookie := []byte(user.Email)
-	log.Println(cookie)
+
+	// setting a cookie for the user
 	c.SetCookie("seasalt", fmt.Sprintf("%v awesome : %v : %v", userDB.ID, cookie, cookiePart), 3600*24, "", "", true, true)
 	fmt.Sprintf("cookie : %v", cookie)
 	c.HTML(http.StatusOK, "buyer_page.html", gin.H{
 		"message": "successful sign in",
 	})
-	//  c.Redirect(http.StatusPermanentRedirect, "/sellerpage")
+	// c.Redirect(http.StatusPermanentRedirect, "/sellers/addproducts")
 	return
 }
 func LogoutUser(c *gin.Context) {
