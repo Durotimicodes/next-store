@@ -3,7 +3,6 @@ package handlers
 import (
 	"fmt"
 	"github.com/decadevs/next_store/database"
-	"github.com/decadevs/next_store/middleware"
 	"github.com/decadevs/next_store/models"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
@@ -17,11 +16,9 @@ import (
 )
 
 //external database
-var db *gorm.DB
-var products []models.Product
 
 //HANDLE WELCOME PAGE
-func Welcomepage(c *gin.Context) {
+func WelcomepageHandler(c *gin.Context) {
 
 	//call the HTML Method of the context to render the template
 	c.HTML(
@@ -36,22 +33,29 @@ func Welcomepage(c *gin.Context) {
 }
 
 //HANDLER MARKETPLACE
-func MarketPlace(c *gin.Context) {
+func MarketPlaceHandler(c *gin.Context) {
 	c.HTML(http.StatusOK, "marketplace.html", gin.H{"message": "Market Place"})
 }
 
 //HANDLER TO POST ON THE DATABASE
-func AdminPostProduct(c *gin.Context) {
+func AdminPostProductHandler(c *gin.Context) {
+
 	//gets the data from form(front end)
-	name := c.PostForm("product_Name")
-	quantity := c.PostForm("product_quantity_left")
-	price := c.PostForm("product_price")
-	cat := c.PostForm("category")
+	name := strings.TrimSpace(c.PostForm("product_Name"))
+	quantity := strings.TrimSpace(c.PostForm("product_quantity_left"))
+	price := strings.TrimSpace(c.PostForm("product_price"))
+	cat := strings.TrimSpace(c.PostForm("category"))
 
 	//converting the price & quantity to integer due to their format in the db
 	p, _ := strconv.Atoi(price)
 	q, _ := strconv.Atoi(quantity)
-	prodImg := c.PostForm("product_img")
+	prodImg := strings.TrimSpace(c.PostForm("product_img"))
+
+	//ensure fields are filled before a product can be posted
+	if name == "" || price == "" || quantity == "" || prodImg == "" {
+		c.Redirect(http.StatusMovedPermanently, "/sellers/addproductspage")
+		return
+	}
 
 	//populating the model struct with the (model) values
 	model := gorm.Model{
@@ -60,6 +64,7 @@ func AdminPostProduct(c *gin.Context) {
 		UpdatedAt: time.Time{},
 		DeletedAt: nil,
 	}
+
 	//populating the product struct with the (product) values
 	product := &models.Product{
 		model,
@@ -69,16 +74,18 @@ func AdminPostProduct(c *gin.Context) {
 		cat,
 		prodImg,
 	}
+
 	//initialize database to db
 	db := c.MustGet("db").(*gorm.DB)
-	//insert product into database
+	//create a product table in database
 	db.Create(&product)
+
 	//redirect back to the seller addproduct page
-	c.Redirect(301, "/sellers/addproductspage")
+	c.Redirect(http.StatusMovedPermanently, "/sellers/addproductspage")
 }
 
 //HANDLER TO GET THE SELLER PAGE
-func AdminGetProduct(c *gin.Context) {
+func AdminGetProductHandler(c *gin.Context) {
 
 	var products []models.Product
 	//initialize the db
@@ -90,7 +97,7 @@ func AdminGetProduct(c *gin.Context) {
 }
 
 //FUNCTION FOR THE SELLER TO DELETE PRODUCT
-func AdminDeleteProduct(c *gin.Context) {
+func AdminDeleteProductHandler(c *gin.Context) {
 	// initialise the database
 	db := c.MustGet("db").(*gorm.DB)
 
@@ -103,7 +110,7 @@ func AdminDeleteProduct(c *gin.Context) {
 }
 
 //LAUNCH PRODUCT IN MARKET
-func AdminPostInMarket(c *gin.Context) {
+func AdminPostInMarketHandler(c *gin.Context) {
 	//retrieving values from the add product form
 	name := c.PostForm("product_Name")
 	quantity := c.PostForm("product_quantity_left")
@@ -139,7 +146,7 @@ func AdminPostInMarket(c *gin.Context) {
 	c.Redirect(301, "/sellers/launchproduct")
 }
 
-func AdminLaunchProduct(c *gin.Context) {
+func AdminLaunchProductHandler(c *gin.Context) {
 
 	var products []models.Product
 	//Get the page
@@ -153,7 +160,7 @@ func AdminLaunchProduct(c *gin.Context) {
 }
 
 //SELLER EDIT PRODUCT
-func SellerEditProduct(c *gin.Context) {
+func SellerEditProductHandler(c *gin.Context) {
 	db := c.MustGet("db").(*gorm.DB)
 	var product models.Product
 	if err := db.Where("id = ?", c.Param("id")).First(&product).Error; err != nil {
@@ -164,7 +171,7 @@ func SellerEditProduct(c *gin.Context) {
 }
 
 //SELLER UPDATE PRODUCT
-func SellerUpdateProduct(c *gin.Context) {
+func SellerUpdateProductHandler(c *gin.Context) {
 	id := c.Param("id")
 	name := strings.TrimSpace(c.PostForm("product_Name"))
 	quantity := strings.TrimSpace(c.PostForm("product_quantity_left"))
@@ -180,7 +187,6 @@ func SellerUpdateProduct(c *gin.Context) {
 	}
 
 	product := &models.Product{
-
 		Name:            name,
 		Price:           p,
 		Quantity:        q,
@@ -194,49 +200,151 @@ func SellerUpdateProduct(c *gin.Context) {
 	c.Redirect(302, "/sellers/addproductspage")
 }
 
+//BUYER PAGE
+func BuyerPageHandler(c *gin.Context) {
+	c.HTML(http.StatusOK, "buyer_page.html", gin.H{
+		"Message": "Product removed from cart Successfully",
+	})
+}
+
+var allPrice []int
+var TotalPrice int
+
 //HANDLER ORDER PRODUCT
-func AddToCart(c *gin.Context) {
-	//ORDERING A PRODUCT
-	path := c.Request.URL.RequestURI()
+func AddToCartHandler(c *gin.Context) {
 
-	value := strings.Split(path, "=")
+	//get product and store in database
+	var products models.Product
 
-	id := value[1]
+	user := &models.User{ID: 5}
+	fmt.Println("This is the user==>", user)
 
-	productId, err := strconv.Atoi(id)
+	userID := user.ID
+
+	db := c.MustGet("db").(*gorm.DB)
+
+	db.Find(&products).Where("id = ?", "products_id")
+
+	carts := &models.Cart{
+		Id:        0,
+		Name:      products.Name,
+		Quantity:  products.Quantity,
+		Price:     products.Price,
+		Image:     products.Productimg,
+		ProductID: products.ID,
+		BuyerID:   userID,
+		Buyer:     models.Buyer{},
+	}
+
+	err := db.Create(carts).Error
+
 	if err != nil {
 		log.Println(err)
 	}
-	pdtId := uint(productId)
 
-	log.Println("productId: ", path)
-	db := c.MustGet("db").(*gorm.DB)
-	db.Find(&products).Where("id = ?", pdtId)
+	//display product in cart
+	var cart []models.Cart
 
-	var product models.Product
+	//1. get the value in int of each product
+	//2. append every price based on the product into a slice
+	//3. loop through the slice and get the big sum
 
-	db.Find(&product).Where("id == ?", pdtId)
+	ProductPrice := carts.Price
 
-	cart := &models.Cart{
-		Name:      product.Name,
-		Price:     product.Price,
-		Quantity:  product.Quantity,
-		ProductID: pdtId,
-		Buyer:     models.Buyer{},
-		BuyerID:   0,
+	allPrice = append(allPrice, ProductPrice)
+
+	for _, val := range allPrice {
+		TotalPrice += val
 	}
-	db = c.MustGet("db").(*gorm.DB)
-	//db.Create(&cart)
-	err1 := db.Create(cart).Error
-	if err != nil {
-		log.Println("error creating an order: ", err1)
-	}
-	c.Redirect(302, "/sellers/launchproduct")
+	fmt.Println("This is the total Price Slice==>", allPrice)
+	fmt.Println("This is the total Price==>", TotalPrice)
+
+	id := carts.ProductID
+
+	db.Find(&cart).Where("id = ?", id)
+
+	c.HTML(http.StatusOK, "buyer_page.html", gin.H{
+		"order": cart,
+	})
 
 }
 
+//func AddToCartHandler(c *gin.Context) {
+//	//ORDERING A PRODUCT
+//	var products []models.Product
+//	//path := c.Request.URL.RequestURI()
+//	//
+//	//value := strings.Split(path, "=")
+//	//
+//	//id := value[1]
+//	//
+//	//productId, err := strconv.Atoi(id)
+//	//if err != nil {
+//	//	log.Println(err)
+//	//}
+//	//pdtId := uint(productId)
+//
+//	//log.Println("productId: ", path)
+//	db := c.MustGet("db").(*gorm.DB)
+//	db.Find(&products).Where("id = ?", c.Param("ID"))
+//
+//	var product models.Product
+//
+//	db.Find(&product).Where("id == ?", "ID")
+//
+//	cart := &models.Cart{
+//		Name:      product.Name,
+//		Price:     product.Price,
+//		Quantity:  product.Quantity,
+//		ProductID: product.ID,
+//		Image:     product.Productimg,
+//		Buyer:     models.Buyer{},
+//	}
+//	fmt.Println("This is the Cart =>", cart)
+//
+//	//db.Create(&cart)
+//	err1 := db.Create(cart).Error
+//	if err1 != nil {
+//		log.Println("error creating an order: ", err1)
+//	}
+//
+//	var cartProducts []models.Cart
+//	cartProducts = append(cartProducts, *cart)
+//
+//	fmt.Println("This is the Cart =>", cart)
+//	fmt.Println("This is the Cart OF PRODUCTS =>", cartProducts)
+//	c.HTML(http.StatusOK, "buyer_page.html", gin.H{
+//		"order": cartProducts,
+//	})
+//}
+
+//REMOVE PRODUCT FROM CART
+func RemoveProductFromCartHandler(c *gin.Context) {
+	//initialise the database
+	db := c.MustGet("db").(*gorm.DB)
+
+	err := db.Delete(&models.Cart{}, c.Param("product_id")).Error
+	if err != nil {
+		return
+	}
+	c.Redirect(302, "/buyerpage")
+}
+
+//HANDLER FOR PAYMENT DETAILS
+func PaymentHandler(c *gin.Context) {
+	var cart models.Cart
+
+	db := c.MustGet("db").(*gorm.DB)
+
+	db.Find(&cart).Where("id = ?", "product_id")
+
+	c.HTML(http.StatusOK, "buyerpayment.html", gin.H{
+		"order": cart,
+	})
+}
+
 //HANDLER SELLER SIGN UP PAGE
-func SellerLogin(c *gin.Context) {
+func SellerLoginPageHandler(c *gin.Context) {
 	c.HTML(
 		http.StatusOK,
 		"seller_login.html",
@@ -245,7 +353,7 @@ func SellerLogin(c *gin.Context) {
 }
 
 //HANDLER BUYER SIGN UP PAGE
-func BuyerSignUp(c *gin.Context) {
+func BuyerSignUpPageHandler(c *gin.Context) {
 	c.HTML(http.StatusOK, "buyer_signup.html", gin.H{"products": "Buyer Sign In"})
 }
 
@@ -258,6 +366,7 @@ func BuyerSignUpHandler(c *gin.Context) {
 	user.Address = c.PostForm("address")
 	user.Username = c.PostForm("username")
 	user.Email = c.PostForm("email")
+
 	// check the database if email exists
 	_, err := database.FindUserByEmail(user.Email)
 	if err == nil {
@@ -279,9 +388,10 @@ func BuyerSignUpHandler(c *gin.Context) {
 		return
 	}
 	// user stored to database and user redirected to the homepage
-	c.HTML(http.StatusOK, "buyer_page.html", gin.H{
-		"message": "successful sign in",
-	})
+	//c.HTML(http.StatusOK, "buyer_page.html", gin.H{
+	//	"message": "successful sign in",
+	//})
+	c.Redirect(http.StatusMovedPermanently, "/sellers/launchproduct")
 	return
 }
 
@@ -290,7 +400,7 @@ func SellerLoginHandler(c *gin.Context) {
 	seller := &models.Seller{}
 	seller.Password = c.PostForm("password")
 	seller.Email = c.PostForm("email")
-	fmt.Println("PRINTING", seller.TimeCreated)
+
 	userDB, err := database.FindSellerByEmail(seller.Email)
 	if err != nil {
 		log.Println(err)
@@ -314,7 +424,7 @@ func SellerLoginHandler(c *gin.Context) {
 	//c.HTML(http.StatusOK, "buyer_page.html", gin.H{
 	//	"message": "successful sign in",
 	//})
-	c.Redirect(http.StatusPermanentRedirect, "/sellers/addproducts")
+	c.Redirect(http.StatusPermanentRedirect, "/admindashboard")
 	return
 }
 
@@ -327,7 +437,7 @@ func LoginHandler(c *gin.Context) {
 	userDB, err := database.FindUserByEmail(user.Email)
 	if err != nil {
 		log.Println(err)
-		c.HTML(http.StatusOK, "buyer_signin.html", gin.H{
+		c.HTML(http.StatusOK, "buyer_login.html", gin.H{
 			"error": "invalid email",
 		})
 		return
@@ -336,7 +446,7 @@ func LoginHandler(c *gin.Context) {
 	err = bcrypt.CompareHashAndPassword([]byte(userDB.PasswordHash), []byte(user.Password))
 	if err != nil {
 		log.Printf("error validating password :%v", err)
-		c.HTML(http.StatusOK, "buyer_signin.html", gin.H{
+		c.HTML(http.StatusOK, "buyer_login.html", gin.H{
 			"error": "invalid password",
 		})
 		return
@@ -348,11 +458,10 @@ func LoginHandler(c *gin.Context) {
 
 	// setting a cookie for the user
 	c.SetCookie("seasalt", fmt.Sprintf("%v awesome : %v : %v", userDB.ID, cookie, cookiePart), 3600*24, "", "", true, true)
-	fmt.Sprintf("cookie : %v", cookie)
-	c.HTML(http.StatusOK, "buyer_page.html", gin.H{
-		"message": "successful sign in",
-	})
-	// c.Redirect(http.StatusPermanentRedirect, "/sellers/addproducts")
+	//c.HTML(http.StatusOK, "buyer_page.html", gin.H{
+	//	"message": "successful sign in",
+	//})
+	c.Redirect(302, "/sellers/launchproduct")
 	return
 }
 func LogoutUser(c *gin.Context) {
@@ -368,7 +477,7 @@ func LogoutUser(c *gin.Context) {
 }
 
 //HANDLER SELLER PAGE
-func SellerPage(c *gin.Context) {
+func SellerPageHandler(c *gin.Context) {
 
 	c.HTML(
 		http.StatusOK,
@@ -386,11 +495,10 @@ func SearchProduct(c *gin.Context) {
 	})
 }
 
-func PayNow(c *gin.Context) {
-	if middleware.Authentication(c) != nil {
-		c.HTML(http.StatusOK, "buyer_page.html", gin.H{
-			"order": models.Order{Notification: "📥 One Product has been ordered"},
-		})
-	}
+func AdminDashBoard(c *gin.Context) {
+
+	c.HTML(http.StatusOK, "sellerdashboard.html", gin.H{
+		"Message": "Admin Dashboard",
+	})
 
 }

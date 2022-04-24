@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,30 +14,31 @@
 <div class="container">
 
     <!-- Start body -->
-    <div class="shopfront-div">
-        <h1 class="shopfront-title">N E X T - S T O R E</h1>
+    <h1 style="text-align: center; font-size: 50px">N E X T - S T O R E</h1>
+    <div class="shopfront-div" style="margin-top: -100px";>
+
 
 
 
         <!-- START BUYER LOGIN FORM -->
-        <div class="buyer-login-form">
-            <form action="https://checkout.flutterwave.com/v3/hosted/pay" method="POST">
+        <div class="buyer-login-form" style="height: 300px">
+            <form action="https://checkout.flutterwave.com/v3/hosted/pay" method="POST" style="width: 80%">
                 <div class="sign-up">
-                    <h1 class="sign-in">PAYMENT DETAILS</h1>
+                    <h1>PAYMENT DETAILS</h1>
                 </div>
-                <div><h1>Total Price:  ₦5,000</h1></div>
-                <input type="hidden" name="public_key" value="FLWPUBK_TEST-SANDBOXDEMOKEY-X" />
-                <input type="text" name="customer[email]" value="" />
-                <input type="text" name="customer[name]" value="Jesse Pinkman" />
+                <h1>Total Price:  ₦{{.order.Price}}</h1>
+                <input type="hidden" name="public_key" value="FLWPUBK_TEST-a5b7c226a8a7d07954298656f131ca4d-X" />
+                <input type="text" name="customer[email]" value=""  placeholder="email"/>
+                <input type="text" name="customer[name]" value="" placeholder="customer name" />
                 <input type="hidden" name="tx_ref" value="bitethtx-019203" />
-                <input type="text" name="amount" />
+                <input type="hidden" name="amount" value="{{.order.Price}}" />
                 <input type="hidden" name="currency" value="NGN" />
                 <input type="hidden" name="meta[token]" value="54" />
                 <input type="hidden" name="redirect_url" value="https//localhost:8084/sellers/launchproduct">
 
 
                 <div class="btn-div">
-                    <button class="submit-btn" type="submit" id="start-payment-button"><a href="">MAKE PAYMENT</a></button>
+                    <button class="submit-btn" type="submit" id="start-payment-button"><a href="">CHECKOUT</a></button>
                 </div>
             </form>
 
@@ -44,8 +46,8 @@
         <!-- END SELLER LOGIN FORM -->
 
         <div class="button-div">
-            <button class="page-btn"><a href="/sellers/launchproduct">Market Place</a></button>
-            <button class="page-btn"><a href="/">Home Page</a></button>
+            <button class="page-btn" style="margin-left: 30px; border-radius: 7px 7px"><a href="/sellers/launchproduct">Market Place</a></button>
+            <button class="page-btn"style="margin-left: 30px; border-radius: 7px 7px"><a href="/">Home Page</a></button>
         </div>
     </div>
     <!-- End body -->

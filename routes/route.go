@@ -24,42 +24,50 @@ func CallRoutes(port string, db *gorm.DB) {
 	router.LoadHTMLGlob("templates/*.html")
 
 	//Welcome page router
-	router.GET("/", handlers.Welcomepage)
+	router.GET("/", handlers.WelcomepageHandler)
 
 	//Market place router
-	router.GET("/marketplace", handlers.MarketPlace)
+	router.GET("/marketplace", handlers.MarketPlaceHandler)
 
 	//buyer page router
-	router.GET("/addtocart", handlers.AddToCart)
+	router.GET("/addtocart/:id", handlers.AddToCartHandler)
+
+	//Buyer Page
+	router.GET("/buyerremoveproduct/:id", handlers.RemoveProductFromCartHandler)
+
+	//Account Details
+	router.GET("/buyer/accountdetails", handlers.PaymentHandler)
 
 	//Buyer SignUp router
-	router.GET("/buyerssignup", handlers.BuyerSignUp)
+	router.GET("/buyerssignup", handlers.BuyerSignUpPageHandler)
 
 	//Seller Edit Product
-	router.GET("/sellers/editPost/:id", handlers.SellerEditProduct)
+	router.GET("/sellers/editPost/:id", handlers.SellerEditProductHandler)
 
 	//Seller Update Product
-	router.POST("/update-product/:id", handlers.SellerUpdateProduct)
+	router.POST("/update-product/:id", handlers.SellerUpdateProductHandler)
 
 	//Admin Post Product
-	router.POST("/sellers/addproducts", handlers.AdminPostProduct)
+	router.POST("/sellers/addproducts", handlers.AdminPostProductHandler)
+
+	//Buyer Page
+	router.GET("/buyerpage", handlers.BuyerPageHandler)
 
 	//Admin Get Product
-	router.GET("/sellers/addproductspage", handlers.AdminGetProduct)
+	router.GET("/sellers/addproductspage", handlers.AdminGetProductHandler)
 
 	//Admin Delete Product
-	router.GET("/sellers/deleteproduct/:id", handlers.AdminDeleteProduct)
+	router.GET("/sellers/deleteproduct/:id", handlers.AdminDeleteProductHandler)
 
 	//Admin Launch Product to Market Place
-	router.POST("/seller/postproduct", handlers.AdminPostInMarket)
-	router.GET("/sellers/launchproduct", handlers.AdminLaunchProduct)
+	router.POST("/seller/postproduct", handlers.AdminPostInMarketHandler)
+	router.GET("/sellers/launchproduct", handlers.AdminLaunchProductHandler)
 
 	//SIGN UP AND LOGIN
-	//seller signin router
-	router.GET("/sellersignup", handlers.SellerLogin)
+	router.GET("/sellersignup", handlers.SellerLoginPageHandler)
 
 	//Seller page router
-	router.GET("/sellerpage", handlers.SellerPage)
+	router.GET("/sellerpage", handlers.SellerPageHandler)
 
 	//Seller Login
 	router.POST("/sellers/signin", handlers.SellerLoginHandler)
@@ -72,8 +80,8 @@ func CallRoutes(port string, db *gorm.DB) {
 	//To search for product
 	router.GET("/searchproduct", handlers.SearchProduct)
 
-	//Admin get notified once a buyer makes an order
-	router.POST("/orderpage", handlers.PayNow)
+	//Adminstrator's Dashboard
+	router.GET("/admindashboard", handlers.AdminDashBoard)
 
 	//start and run the server on port 8084
 	port = ":" + os.Getenv("PORT")
