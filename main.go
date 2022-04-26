@@ -21,12 +21,12 @@ func main() {
 		log.Println("Error in Launching Database")
 		log.Fatal(er)
 	}
-	
+
 	defer db.Close()
 	//delay database shutdown
 
 	//seller's in-memory data
-	//database.SellerDB()
+	database.SellerDB()
 
 	//call routes /sever
 	routes.CallRoutes("port", db)

@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Anek+Odia&family=Dancing+Script:wght@500&family=Titillium+Web:wght@200;300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/css/seller-signup.css">
-    <link rel="icon" href="/static/images/png-transparent-retail-computer-icons-e-commerce-sales-mega-offer-miscellaneous-service-logo.png" type="image/x-icon">
+    <link rel="icon" href="/static/images/download.png" type="image/x-icon">
     <title>Next SELLER</title>
 </head>
 <style>
@@ -51,12 +51,12 @@
             <!-- START SELLER LOGIN FORM -->
             <h3 style="text-align: center; font-size: 30px">ADMIN LOGIN ACCOUNT</h3>
               <div class="seller-login-form">
-                  <form action="/sellers/signin" class="form-box" method="POST">
+                  <form action="/seller/signin" class="form-box" method="POST">
                     <div class="email">
                       <input type="text" name="email" id="email" required placeholder="Email">
                   </div>
                   <div class="password">
-                    <input type="password" onclick="AdminLoginMsg()" name="password" id="password" required placeholder="Password">
+                    <input type="password" name="password" id="password" required placeholder="Password">
                 </div>
                 <div class="btn-div">
                   <button class="continue-btn">Log In</button>
@@ -66,7 +66,7 @@
               </div>
               <!-- END SELLER LOGIN FORM -->
               <div>
-                  <button class="page-btn"><a href="/sellers/launchproduct"class="redirect-link"; style="color: black" >Market Place</a></button>
+                  <button class="page-btn"><a href="/seller/launchproduct"class="redirect-link"; style="color: black" >Market Place</a></button>
                   <button class="page-btn"><a href="/" class="redirect-link" style="color: black">Home Page</a></button>
               </div>
 
@@ -74,11 +74,7 @@
 
           <!-- End body -->
         </div>
-<!--    <script>-->
-<!--        function AdminLoginMsg() {-->
-<!--            alert("Logged In");-->
-<!--        }-->
-<!--    </script>-->
+
 
 </body>
 </html>

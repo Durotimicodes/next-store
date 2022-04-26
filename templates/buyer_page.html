@@ -23,12 +23,8 @@
     <div class="buyer-gohome" style=" width: 40%; margin-left: 10px">
         <h1>OUTFITS ORDERED</h1>
         <br>
-        {{range $ind, $val := .order}}
-        <h3 style="margin-left: 15px" class="item-ordered">Total Price : ₦{{ $val.Price }}</h3>
-        {{end}}
-        <br>
         <button type="submit" class="thebutton edit-product" id="start-payment-button" style="height: 75px; width: 260px">
-            <a href="/buyer/accountdetails">CHECK OUT</a></button>
+            <a href="/buyer/paymentdetail">CHECK OUT</a></button>
     </div>
 
 
@@ -40,13 +36,13 @@
         <div style="display: flex; flex-direction: row" >
             <div>
                 <h3 style="color: #000"> {{ $val.Name }}</h3>
-                <img style="height: 200px" src="{{$val.Image}}" >
+                <img style="height: 200px" src="{{$val.Image}}">
                 <h1 class="item-ordered">{{ $val.Price }}</h1>
             </div>
         </div>
         <div>
             <ul style="list-style-type: none; width: 35rem;">
-                <li><a href="/buyerremoveproduct" class="thebutton delete-product">Remove From Cart</a></li>
+                <li><a href="/buyer/removeproduct/" class="thebutton delete-product">Remove From Cart</a></li>
             </ul>
         </div>
         <hr>
@@ -54,7 +50,7 @@
     </div>
 
     <div>
-        <button class="btn"><a href="/sellers/launchproduct">Market Place</a></button>
+        <button class="btn"><a href="/seller/launchproduct">Market Place</a></button>
         <button class="btn"><a href="/">Home Page</a></button>
     </div>
 </div>
